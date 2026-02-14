@@ -1,28 +1,53 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import PageHeader from '@/components/PageHeader';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 const PLANS = ['deposit.plan.starter', 'deposit.plan.pro', 'deposit.plan.vip'] as const;
+
+function generateCaptcha() {
+  const a = Math.floor(Math.random() * 10) + 1;
+  const b = Math.floor(Math.random() * 10) + 1;
+  return { question: `${a} + ${b} = ?`, answer: a + b };
+}
 
 const Deposit = () => {
   const { t } = useLanguage();
   const [form, setForm] = useState({ name: '', email: '', amount: '', wallet: '', plan: '' });
   const [loading, setLoading] = useState(false);
+  const [captcha, setCaptcha] = useState(generateCaptcha);
+  const [captchaInput, setCaptchaInput] = useState('');
+
+  const resetCaptcha = useCallback(() => {
+    setCaptcha(generateCaptcha());
+    setCaptchaInput('');
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (parseInt(captchaInput) !== captcha.answer) {
+      toast.error(t('deposit.form.captcha_error'));
+      resetCaptcha();
+      return;
+    }
+
     setLoading(true);
 
     const text = `🆕 Новая заявка на депозит!\n\n👤 Имя: ${form.name}\n📧 Email: ${form.email}\n💰 Сумма: ${form.amount} USDT\n👛 Кошелёк: ${form.wallet}\n📋 План: ${form.plan}`;
 
     try {
-      // To enable Telegram, set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID
-      // For now, just show success
-      console.log('Deposit form data:', text);
+      const { data, error } = await supabase.functions.invoke('send-telegram', {
+        body: { text },
+      });
+
+      if (error) throw error;
+
       toast.success(t('deposit.form.success'));
       setForm({ name: '', email: '', amount: '', wallet: '', plan: '' });
+      resetCaptcha();
     } catch {
       toast.error(t('deposit.form.error'));
     } finally {
@@ -72,6 +97,19 @@ const Deposit = () => {
                   <option key={p} value={t(p)}>{t(p)}</option>
                 ))}
               </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-1.5">
+                {t('deposit.form.captcha')}: <span className="font-bold text-primary">{captcha.question}</span>
+              </label>
+              <input
+                type="number"
+                required
+                value={captchaInput}
+                onChange={(e) => setCaptchaInput(e.target.value)}
+                className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+              />
             </div>
 
             <button

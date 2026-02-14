@@ -49,6 +49,8 @@ const translations: Record<string, Record<Lang, string>> = {
   'deposit.form.submit': { ru: 'Отправить заявку', en: 'Submit Application' },
   'deposit.form.success': { ru: 'Заявка отправлена! Мы свяжемся с вами.', en: 'Application sent! We will contact you.' },
   'deposit.form.error': { ru: 'Ошибка отправки. Попробуйте позже.', en: 'Sending error. Try again later.' },
+  'deposit.form.captcha': { ru: 'Решите пример', en: 'Solve the equation' },
+  'deposit.form.captcha_error': { ru: 'Неверный ответ на капчу', en: 'Incorrect captcha answer' },
   'deposit.plan.starter': { ru: 'Стартовый', en: 'Starter' },
   'deposit.plan.pro': { ru: 'Профессиональный', en: 'Professional' },
   'deposit.plan.vip': { ru: 'VIP', en: 'VIP' },
