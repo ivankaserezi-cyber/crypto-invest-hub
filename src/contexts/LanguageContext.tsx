@@ -54,6 +54,8 @@ const translations: Record<string, Record<Lang, string>> = {
   'deposit.plan.starter': { ru: 'Стартовый', en: 'Starter' },
   'deposit.plan.pro': { ru: 'Профессиональный', en: 'Professional' },
   'deposit.plan.vip': { ru: 'VIP', en: 'VIP' },
+  'deposit.wallet_address': { ru: 'Адрес для перевода', en: 'Wallet Address for Transfer' },
+  'deposit.copied': { ru: 'Адрес скопирован!', en: 'Address copied!' },
 
   // Referrals
   'referrals.title': { ru: 'Реферальная программа', en: 'Referral Program' },
