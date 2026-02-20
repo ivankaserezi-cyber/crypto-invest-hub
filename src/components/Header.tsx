@@ -5,16 +5,16 @@ import { Menu, X, Globe, TrendingUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const navItems = [
-  { key: 'nav.home', path: '/' },
-  { key: 'nav.deposit', path: '/deposit' },
-  { key: 'nav.referrals', path: '/referrals' },
-  { key: 'nav.withdraw', path: '/withdraw' },
-  { key: 'nav.documents', path: '/documents' },
-  { key: 'nav.top', path: '/top-investors' },
-  { key: 'nav.rates', path: '/rates' },
-  { key: 'nav.contacts', path: '/contacts' },
-  { key: 'nav.office', path: '/office' },
-];
+{ key: 'nav.home', path: '/' },
+{ key: 'nav.deposit', path: '/deposit' },
+{ key: 'nav.referrals', path: '/referrals' },
+{ key: 'nav.withdraw', path: '/withdraw' },
+{ key: 'nav.documents', path: '/documents' },
+{ key: 'nav.top', path: '/top-investors' },
+{ key: 'nav.rates', path: '/rates' },
+{ key: 'nav.contacts', path: '/contacts' },
+{ key: 'nav.office', path: '/office' }];
+
 
 const Header = () => {
   const { t, lang, setLang } = useLanguage();
@@ -35,34 +35,34 @@ const Header = () => {
 
         {/* Desktop Nav */}
         <nav className="hidden lg:flex items-center gap-1">
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                location.pathname === item.path
-                  ? 'text-primary bg-primary/10'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
-              }`}
-            >
-              {t(item.key)}
+          {navItems.map((item) =>
+          <Link
+            key={item.path}
+            to={item.path}
+            className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+            location.pathname === item.path ?
+            'text-primary bg-primary/10' :
+            'text-muted-foreground hover:text-foreground hover:bg-secondary'}`
+            }>Акаунт
+
+            {t(item.key)}
             </Link>
-          ))}
+          )}
         </nav>
 
         <div className="flex items-center gap-2">
           <button
             onClick={() => setLang(lang === 'ru' ? 'en' : 'ru')}
-            className="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-          >
+            className="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors">
+
             <Globe className="w-4 h-4" />
             {lang === 'ru' ? 'EN' : 'RU'}
           </button>
 
           <button
             className="lg:hidden p-2 text-foreground"
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
+            onClick={() => setMenuOpen(!menuOpen)}>
+
             {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
@@ -70,34 +70,34 @@ const Header = () => {
 
       {/* Mobile Nav */}
       <AnimatePresence>
-        {menuOpen && (
-          <motion.nav
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden glass border-t border-border overflow-hidden"
-          >
+        {menuOpen &&
+        <motion.nav
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          className="lg:hidden glass border-t border-border overflow-hidden">
+
             <div className="container mx-auto px-4 py-4 flex flex-col gap-1">
-              {navItems.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={() => setMenuOpen(false)}
-                  className={`px-4 py-3 rounded-md text-sm font-medium transition-colors ${
-                    location.pathname === item.path
-                      ? 'text-primary bg-primary/10'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
-                  }`}
-                >
+              {navItems.map((item) =>
+            <Link
+              key={item.path}
+              to={item.path}
+              onClick={() => setMenuOpen(false)}
+              className={`px-4 py-3 rounded-md text-sm font-medium transition-colors ${
+              location.pathname === item.path ?
+              'text-primary bg-primary/10' :
+              'text-muted-foreground hover:text-foreground hover:bg-secondary'}`
+              }>
+
                   {t(item.key)}
                 </Link>
-              ))}
+            )}
             </div>
           </motion.nav>
-        )}
+        }
       </AnimatePresence>
-    </header>
-  );
+    </header>);
+
 };
 
 export default Header;
