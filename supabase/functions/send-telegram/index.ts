@@ -16,8 +16,7 @@ Deno.serve(async (req) => {
 
     const token = Deno.env.get('TELEGRAM_BOT_TOKEN');
     const chatId = Deno.env.get('TELEGRAM_CHAT_ID');
-
-    console.log('Token prefix:', token?.substring(0, 10), 'ChatId:', chatId);
+    console.log('Token length:', token?.length, 'Token start:', token?.substring(0, 12), 'ChatId:', chatId);
 
     if (!token || !chatId) {
       return new Response(JSON.stringify({ error: 'Telegram not configured' }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
