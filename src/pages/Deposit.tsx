@@ -4,6 +4,7 @@ import PageHeader from '@/components/PageHeader';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { Copy, Wallet } from 'lucide-react';
 
 const PLANS = ['deposit.plan.starter', 'deposit.plan.pro', 'deposit.plan.vip'] as const;
 
@@ -60,6 +61,32 @@ const Deposit = () => {
       <PageHeader title={t('deposit.title')} subtitle={t('deposit.subtitle')} />
       <section className="py-16">
         <div className="container mx-auto px-4 max-w-xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 p-6 rounded-2xl bg-gradient-card border border-border"
+          >
+            <div className="flex items-center gap-2 mb-3">
+              <Wallet className="w-5 h-5 text-primary" />
+              <h3 className="text-lg font-semibold text-foreground">{t('deposit.wallet_address')}</h3>
+            </div>
+            <div className="flex items-center gap-2">
+              <code className="flex-1 px-4 py-3 rounded-lg bg-secondary border border-border text-foreground text-sm break-all select-all">
+                0x66E8b231d0B935cEc2327Ce5bedBA5a00E230aF3
+              </code>
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.writeText('0x66E8b231d0B935cEc2327Ce5bedBA5a00E230aF3');
+                  toast.success(t('deposit.copied'));
+                }}
+                className="p-3 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition-all shrink-0"
+              >
+                <Copy className="w-5 h-5" />
+              </button>
+            </div>
+          </motion.div>
+
           <motion.form
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
