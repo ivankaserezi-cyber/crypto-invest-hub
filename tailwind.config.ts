@@ -29,7 +29,7 @@ export default {
   				'sans-serif'
   			],
   			serif: [
-  				'Crimson Pro',
+  				'Lora',
   				'ui-serif',
   				'Georgia',
   				'Cambria',
@@ -38,7 +38,7 @@ export default {
   				'serif'
   			],
   			mono: [
-  				'IBM Plex Mono',
+  				'Space Mono',
   				'ui-monospace',
   				'SFMono-Regular',
   				'Menlo',
