@@ -1,85 +1,108 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
 import PageHeader from '@/components/PageHeader';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { Copy, Wallet } from 'lucide-react';
+import { Copy, Wallet, Bitcoin } from 'lucide-react';
+import { Navigate } from 'react-router-dom';
 
-const PLANS = ['deposit.plan.starter', 'deposit.plan.pro', 'deposit.plan.vip'] as const;
-
-function generateCaptcha() {
-  const a = Math.floor(Math.random() * 10) + 1;
-  const b = Math.floor(Math.random() * 10) + 1;
-  return { question: `${a} + ${b} = ?`, answer: a + b };
-}
+const WALLETS = [
+  { currency: 'USDT (ERC-20)', address: '0x66E8b231d0B935cEc2327Ce5bedBA5a00E230aF3', icon: '💵' },
+  { currency: 'BTC', address: 'bc1qdndyl3cf2a4j6qu0k0xdnhg3u07ulmuhpfzdf7', icon: '₿' },
+  { currency: 'ETH', address: '0x66E8b231d0B935cEc2327Ce5bedBA5a00E230aF3', icon: 'Ξ' },
+  { currency: 'BNB (BEP-20)', address: '0x66E8b231d0B935cEc2327Ce5bedBA5a00E230aF3', icon: '🔶' },
+  { currency: 'USDT (TRC-20)', address: 'TJfoNYKWa6hRwRyrpfXb1mcwn3fRSojsBP', icon: '💲' },
+  { currency: 'SOL', address: '4EnMkdj1xPpBxTVnhmp9zTb8neZ5X5EFPS9jjeDvt1nm', icon: '◎' },
+];
 
 const Deposit = () => {
   const { t } = useLanguage();
-  const [form, setForm] = useState({ name: '', email: '', amount: '', wallet: '', plan: '' });
+  const { user } = useAuth();
+  const [selected, setSelected] = useState(0);
+  const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(false);
-  const [captcha, setCaptcha] = useState(generateCaptcha);
-  const [captchaInput, setCaptchaInput] = useState('');
 
-  const resetCaptcha = useCallback(() => {
-    setCaptcha(generateCaptcha());
-    setCaptchaInput('');
-  }, []);
+  if (!user) return <Navigate to="/login" replace />;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (parseInt(captchaInput) !== captcha.answer) {
-      toast.error(t('deposit.form.captcha_error'));
-      resetCaptcha();
+  const handleDeposit = async () => {
+    if (!amount || parseFloat(amount) <= 0) {
+      toast.error(t('deposit.enter_amount'));
       return;
     }
 
     setLoading(true);
-
-    const text = `🆕 Новая заявка на депозит!\n\n👤 Имя: ${form.name}\n📧 Email: ${form.email}\n💰 Сумма: ${form.amount} USDT\n👛 Кошелёк: ${form.wallet}\n📋 План: ${form.plan}`;
-
     try {
-      const { data, error } = await supabase.functions.invoke('send-telegram', {
-        body: { text },
+      const { error } = await supabase.from('transactions').insert({
+        user_id: user.id,
+        type: 'deposit',
+        amount: parseFloat(amount),
+        currency: WALLETS[selected].currency,
+        wallet_address: WALLETS[selected].address,
+        status: 'pending',
       });
 
       if (error) throw error;
 
-      toast.success(t('deposit.form.success'));
-      setForm({ name: '', email: '', amount: '', wallet: '', plan: '' });
-      resetCaptcha();
+      const text = `💰 Новая заявка на депозит!\n\n👤 ${user.email}\n💵 Сумма: ${amount} ${WALLETS[selected].currency}\n👛 Адрес: ${WALLETS[selected].address}`;
+      await supabase.functions.invoke('send-telegram', { body: { text } });
+
+      toast.success(t('deposit.success'));
+      setAmount('');
     } catch {
-      toast.error(t('deposit.form.error'));
+      toast.error(t('deposit.error'));
     } finally {
       setLoading(false);
     }
+  };
+
+  const copyAddress = () => {
+    navigator.clipboard.writeText(WALLETS[selected].address);
+    toast.success(t('deposit.copied'));
   };
 
   return (
     <div>
       <PageHeader title={t('deposit.title')} subtitle={t('deposit.subtitle')} />
       <section className="py-16">
-        <div className="container mx-auto px-4 max-w-xl">
+        <div className="container mx-auto px-4 max-w-2xl">
+          {/* Currency selector */}
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 mb-8">
+            {WALLETS.map((w, i) => (
+              <motion.button
+                key={i}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setSelected(i)}
+                className={`p-3 rounded-xl border text-center transition-all ${
+                  selected === i
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-border bg-gradient-card text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <div className="text-2xl mb-1">{w.icon}</div>
+                <div className="text-xs font-medium truncate">{w.currency.split(' ')[0]}</div>
+              </motion.button>
+            ))}
+          </div>
+
+          {/* Wallet address */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            key={selected}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-6 p-6 rounded-2xl bg-gradient-card border border-border"
+            className="p-6 rounded-2xl bg-gradient-card border border-border mb-6"
           >
             <div className="flex items-center gap-2 mb-3">
               <Wallet className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold text-foreground">{t('deposit.wallet_address')}</h3>
+              <h3 className="text-lg font-semibold text-foreground">{WALLETS[selected].currency}</h3>
             </div>
             <div className="flex items-center gap-2">
               <code className="flex-1 px-4 py-3 rounded-lg bg-secondary border border-border text-foreground text-sm break-all select-all">
-                0x66E8b231d0B935cEc2327Ce5bedBA5a00E230aF3
+                {WALLETS[selected].address}
               </code>
               <button
-                type="button"
-                onClick={() => {
-                  navigator.clipboard.writeText('0x66E8b231d0B935cEc2327Ce5bedBA5a00E230aF3');
-                  toast.success(t('deposit.copied'));
-                }}
+                onClick={copyAddress}
                 className="p-3 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition-all shrink-0"
               >
                 <Copy className="w-5 h-5" />
@@ -87,66 +110,24 @@ const Deposit = () => {
             </div>
           </motion.div>
 
-          <motion.form
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            onSubmit={handleSubmit}
-            className="p-8 rounded-2xl bg-gradient-card border border-border space-y-5"
-          >
-            {[
-              { key: 'name', label: t('deposit.form.name'), type: 'text' },
-              { key: 'email', label: t('deposit.form.email'), type: 'email' },
-              { key: 'amount', label: t('deposit.form.amount'), type: 'number' },
-              { key: 'wallet', label: t('deposit.form.wallet'), type: 'text' },
-            ].map((field) => (
-              <div key={field.key}>
-                <label className="block text-sm font-medium text-foreground mb-1.5">{field.label}</label>
-                <input
-                  type={field.type}
-                  required
-                  value={form[field.key as keyof typeof form]}
-                  onChange={(e) => setForm({ ...form, [field.key]: e.target.value })}
-                  className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-                />
-              </div>
-            ))}
-
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1.5">{t('deposit.form.plan')}</label>
-              <select
-                required
-                value={form.plan}
-                onChange={(e) => setForm({ ...form, plan: e.target.value })}
-                className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-              >
-                <option value="" disabled>—</option>
-                {PLANS.map((p) => (
-                  <option key={p} value={t(p)}>{t(p)}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1.5">
-                {t('deposit.form.captcha')}: <span className="font-bold text-primary">{captcha.question}</span>
-              </label>
-              <input
-                type="number"
-                required
-                value={captchaInput}
-                onChange={(e) => setCaptchaInput(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-              />
-            </div>
-
+          {/* Amount input and submit */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="p-6 rounded-2xl bg-gradient-card border border-border">
+            <label className="block text-sm font-medium text-foreground mb-2">{t('deposit.amount_label')}</label>
+            <input
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              placeholder="0.00"
+              className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all mb-4"
+            />
             <button
-              type="submit"
+              onClick={handleDeposit}
               disabled={loading}
               className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-all glow-primary disabled:opacity-50"
             >
-              {loading ? '...' : t('deposit.form.submit')}
+              {loading ? '...' : t('deposit.confirm')}
             </button>
-          </motion.form>
+          </motion.div>
         </div>
       </section>
     </div>

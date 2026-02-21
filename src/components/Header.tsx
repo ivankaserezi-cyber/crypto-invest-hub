@@ -1,30 +1,38 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Menu, X, Globe, TrendingUp } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { Menu, X, Globe, TrendingUp, LogIn, LayoutDashboard } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-
-const navItems = [
-  { key: 'nav.home', path: '/' },
-  { key: 'nav.deposit', path: '/deposit' },
-  { key: 'nav.referrals', path: '/referrals' },
-  { key: 'nav.withdraw', path: '/withdraw' },
-  { key: 'nav.documents', path: '/documents' },
-  { key: 'nav.top', path: '/top-investors' },
-  { key: 'nav.rates', path: '/rates' },
-  { key: 'nav.contacts', path: '/contacts' },
-  { key: 'nav.office', path: '/office' },
-];
 
 const Header = () => {
   const { t, lang, setLang } = useLanguage();
+  const { user } = useAuth();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const publicNav = [
+    { key: 'nav.home', path: '/' },
+    { key: 'nav.trading', path: '/trading' },
+    { key: 'nav.rates', path: '/rates' },
+    { key: 'nav.about', path: '/about' },
+    { key: 'nav.contacts', path: '/contacts' },
+  ];
+
+  const authNav = [
+    { key: 'nav.dashboard', path: '/dashboard' },
+    { key: 'nav.deposit', path: '/deposit' },
+    { key: 'nav.withdraw', path: '/withdraw' },
+    { key: 'nav.referrals', path: '/referrals' },
+    { key: 'nav.trading', path: '/trading' },
+  ];
+
+  const navItems = user ? authNav : publicNav;
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2">
+        <Link to={user ? '/dashboard' : '/'} className="flex items-center gap-2">
           <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center glow-primary">
             <TrendingUp className="w-6 h-6 text-primary" />
           </div>
@@ -33,7 +41,6 @@ const Header = () => {
           </span>
         </Link>
 
-        {/* Desktop Nav */}
         <nav className="hidden lg:flex items-center gap-1">
           {navItems.map((item) => (
             <Link
@@ -59,6 +66,20 @@ const Header = () => {
             {lang === 'ru' ? 'EN' : 'RU'}
           </button>
 
+          {!user && (
+            <Link to="/login" className="hidden lg:flex items-center gap-1 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-all">
+              <LogIn className="w-4 h-4" />
+              {t('auth.login')}
+            </Link>
+          )}
+
+          {user && (
+            <Link to="/dashboard" className="hidden lg:flex items-center gap-1 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-all">
+              <LayoutDashboard className="w-4 h-4" />
+              {t('nav.dashboard')}
+            </Link>
+          )}
+
           <button
             className="lg:hidden p-2 text-foreground"
             onClick={() => setMenuOpen(!menuOpen)}
@@ -68,7 +89,6 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Mobile Nav */}
       <AnimatePresence>
         {menuOpen && (
           <motion.nav
@@ -92,6 +112,11 @@ const Header = () => {
                   {t(item.key)}
                 </Link>
               ))}
+              {!user && (
+                <Link to="/login" onClick={() => setMenuOpen(false)} className="px-4 py-3 rounded-md text-sm font-medium text-primary">
+                  {t('auth.login')}
+                </Link>
+              )}
             </div>
           </motion.nav>
         )}
