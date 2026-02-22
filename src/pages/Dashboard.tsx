@@ -9,14 +9,14 @@ import { useToast } from '@/hooks/use-toast';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const chartData = [
-  { day: 'Пн', profit: 1.2 },
-  { day: 'Вт', profit: 2.1 },
-  { day: 'Ср', profit: 1.8 },
-  { day: 'Чт', profit: 3.2 },
-  { day: 'Пт', profit: 2.8 },
-  { day: 'Сб', profit: 3.5 },
-  { day: 'Вс', profit: 4.1 },
-];
+{ day: 'Пн', profit: 1.2 },
+{ day: 'Вт', profit: 2.1 },
+{ day: 'Ср', profit: 1.8 },
+{ day: 'Чт', profit: 3.2 },
+{ day: 'Пт', profit: 2.8 },
+{ day: 'Сб', profit: 3.5 },
+{ day: 'Вс', profit: 4.1 }];
+
 
 const Dashboard = () => {
   const { user, signOut } = useAuth();
@@ -110,8 +110,8 @@ const Dashboard = () => {
                   <YAxis stroke="hsl(215 20% 55%)" fontSize={12} tickFormatter={(v) => `${v}%`} />
                   <Tooltip
                     contentStyle={{ background: 'hsl(222 40% 10%)', border: '1px solid hsl(222 30% 18%)', borderRadius: '8px', color: 'hsl(210 40% 95%)' }}
-                    formatter={(value: number) => [`${value}%`, 'Прибыль']}
-                  />
+                    formatter={(value: number) => [`${value}%`, 'Прибыль']} />
+
                   <Line type="monotone" dataKey="profit" stroke="hsl(192 85% 55%)" strokeWidth={2} dot={{ fill: 'hsl(192 85% 55%)' }} />
                 </LineChart>
               </ResponsiveContainer>
@@ -121,10 +121,10 @@ const Dashboard = () => {
           {/* Transaction History */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="p-6 rounded-2xl bg-gradient-card border border-border mb-8">
             <h3 className="text-lg font-display font-semibold text-foreground mb-4">{t('dashboard.history')}</h3>
-            {transactions.length === 0 ? (
-              <p className="text-center text-muted-foreground py-8">{t('dashboard.no_transactions')}</p>
-            ) : (
-              <div className="overflow-x-auto">
+            {transactions.length === 0 ?
+            <p className="text-center text-muted-foreground py-8">{t('dashboard.no_transactions')}</p> :
+
+            <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-border">
@@ -135,8 +135,8 @@ const Dashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {transactions.map((tx) => (
-                      <tr key={tx.id} className="border-b border-border/50">
+                    {transactions.map((tx) =>
+                  <tr key={tx.id} className="border-b border-border/50">
                         <td className="py-3 px-2">
                           <span className={tx.type === 'deposit' ? 'text-accent' : 'text-destructive'}>
                             {tx.type === 'deposit' ? '↓ ' + t('dashboard.deposit') : '↑ ' + t('dashboard.withdrawal')}
@@ -145,22 +145,22 @@ const Dashboard = () => {
                         <td className="py-3 px-2 text-foreground">{tx.amount} {tx.currency}</td>
                         <td className="py-3 px-2">
                           <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            tx.status === 'completed' ? 'bg-accent/20 text-accent' :
-                            tx.status === 'rejected' ? 'bg-destructive/20 text-destructive' :
-                            'bg-primary/20 text-primary'
-                          }`}>
+                      tx.status === 'completed' ? 'bg-accent/20 text-accent' :
+                      tx.status === 'rejected' ? 'bg-destructive/20 text-destructive' :
+                      'bg-primary/20 text-primary'}`
+                      }>
                             {tx.status === 'completed' ? t('dashboard.completed') :
-                             tx.status === 'rejected' ? t('dashboard.rejected') :
-                             t('dashboard.pending')}
+                        tx.status === 'rejected' ? t('dashboard.rejected') :
+                        t('dashboard.pending')}
                           </span>
                         </td>
                         <td className="py-3 px-2 text-muted-foreground">{new Date(tx.created_at).toLocaleDateString()}</td>
                       </tr>
-                    ))}
+                  )}
                   </tbody>
                 </table>
               </div>
-            )}
+            }
           </motion.div>
 
           {/* Referral Section */}
@@ -192,34 +192,34 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              {profile?.referral_code && (
-                <div className="space-y-3">
-                  <label className="text-sm font-medium text-muted-foreground">{t('dashboard.your_link')}</label>
-                  <div className="flex gap-2">
-                    <input
-                      readOnly
-                      value={`${window.location.origin}/register?ref=${profile.referral_code}`}
-                      className="flex-1 px-4 py-3 rounded-xl bg-secondary border border-border text-foreground text-sm font-mono"
-                    />
-                    <button
-                      onClick={() => {
-                        navigator.clipboard.writeText(`${window.location.origin}/register?ref=${profile.referral_code}`);
-                        toast({ title: t('deposit.copied') });
-                      }}
-                      className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-all glow-primary"
-                    >
-                      {t('dashboard.copy')}
-                    </button>
-                  </div>
-                  <p className="text-xs text-muted-foreground">{t('dashboard.referral_hint')}</p>
-                </div>
-              )}
+              {profile?.referral_code
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              }
             </div>
           </motion.div>
         </div>
       </section>
-    </div>
-  );
+    </div>);
+
 };
 
 export default Dashboard;
