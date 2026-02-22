@@ -20,6 +20,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Trading from "./pages/Trading";
 import About from "./pages/About";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -47,6 +48,7 @@ const App = () => (
                 <Route path="/contacts" element={<Contacts />} />
                 <Route path="/trading" element={<Trading />} />
                 <Route path="/about" element={<About />} />
+                <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Layout>

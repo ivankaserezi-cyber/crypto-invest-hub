@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { Menu, X, Globe, TrendingUp, LogIn, LayoutDashboard } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { Menu, X, Globe, TrendingUp, LogIn, LayoutDashboard, Shield } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Header = () => {
@@ -10,6 +11,13 @@ const Header = () => {
   const { user } = useAuth();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (!user) { setIsAdmin(false); return; }
+    supabase.from('user_roles').select('role').eq('user_id', user.id).eq('role', 'admin').maybeSingle()
+      .then(({ data }) => setIsAdmin(!!data));
+  }, [user]);
 
   const publicNav = [
     { key: 'nav.home', path: '/' },
@@ -25,6 +33,7 @@ const Header = () => {
     { key: 'nav.withdraw', path: '/withdraw' },
     { key: 'nav.referrals', path: '/referrals' },
     { key: 'nav.trading', path: '/trading' },
+    ...(isAdmin ? [{ key: 'nav.admin', path: '/admin' }] : []),
   ];
 
   const navItems = user ? authNav : publicNav;

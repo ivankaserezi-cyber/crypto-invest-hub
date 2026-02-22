@@ -188,6 +188,35 @@ const translations: Record<string, Record<Lang, string>> = {
   // Footer
   'footer.rights': { ru: '© 2026 CryptoAI Invest. Все права защищены.', en: '© 2026 CryptoAI Invest. All rights reserved.' },
   'footer.risk': { ru: 'Инвестиции связаны с рисками. Прошлые результаты не гарантируют будущих доходов.', en: 'Investments involve risks. Past results do not guarantee future returns.' },
+
+  // Dashboard referral
+  'dashboard.referral_title': { ru: 'Реферальная программа', en: 'Referral Program' },
+  'dashboard.referral_desc': { ru: 'Приглашайте друзей и получайте процент от их дохода', en: 'Invite friends and earn a percentage of their income' },
+  'dashboard.your_link': { ru: 'Ваша реферальная ссылка', en: 'Your referral link' },
+  'dashboard.copy': { ru: 'Копировать', en: 'Copy' },
+  'dashboard.referral_hint': { ru: 'Поделитесь этой ссылкой — друзья зарегистрируются, и вы будете получать бонусы', en: 'Share this link — friends register and you earn bonuses' },
+
+  // Admin
+  'nav.admin': { ru: 'Админ', en: 'Admin' },
+  'admin.title': { ru: 'Админ-панель', en: 'Admin Panel' },
+  'admin.subtitle': { ru: 'Управление транзакциями пользователей', en: 'Manage user transactions' },
+  'admin.access_denied': { ru: 'Доступ запрещён', en: 'Access Denied' },
+  'admin.no_permission': { ru: 'У вас нет прав администратора', en: 'You do not have admin permissions' },
+  'admin.user': { ru: 'Пользователь', en: 'User' },
+  'admin.wallet': { ru: 'Кошелёк', en: 'Wallet' },
+  'admin.actions': { ru: 'Действия', en: 'Actions' },
+  'admin.approve': { ru: 'Одобрить', en: 'Approve' },
+  'admin.reject': { ru: 'Отклонить', en: 'Reject' },
+  'admin.approved': { ru: 'Транзакция одобрена', en: 'Transaction approved' },
+  'admin.rejected_msg': { ru: 'Транзакция отклонена', en: 'Transaction rejected' },
+  'admin.error': { ru: 'Ошибка обновления', en: 'Update error' },
+  'admin.pending_count': { ru: 'Ожидают', en: 'Pending' },
+  'admin.total_tx': { ru: 'Всего транзакций', en: 'Total Transactions' },
+  'admin.volume': { ru: 'Объём (выполнено)', en: 'Volume (completed)' },
+  'admin.filter_all': { ru: 'Все', en: 'All' },
+  'admin.filter_pending': { ru: 'Ожидание', en: 'Pending' },
+  'admin.filter_completed': { ru: 'Выполнено', en: 'Completed' },
+  'admin.filter_rejected': { ru: 'Отклонено', en: 'Rejected' },
 };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
