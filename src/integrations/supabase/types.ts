@@ -80,12 +80,41 @@ export type Database = {
         }
         Relationships: []
       }
+      users: {
+        Row: {
+          id: number
+          ref_code: string
+          referred_by: number | null
+          username: string
+        }
+        Insert: {
+          id?: number
+          ref_code: string
+          referred_by?: number | null
+          username: string
+        }
+        Update: {
+          id?: number
+          ref_code?: string
+          referred_by?: number | null
+          username?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "users_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_random_code: { Args: never; Returns: string }
     }
     Enums: {
       [_ in never]: never
