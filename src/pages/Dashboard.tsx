@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Wallet, TrendingUp, ArrowDownCircle, ArrowUpCircle, Users, LogOut, Clock } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const chartData = [
@@ -20,6 +21,7 @@ const chartData = [
 const Dashboard = () => {
   const { user, signOut } = useAuth();
   const { t } = useLanguage();
+  const { toast } = useToast();
   const [profile, setProfile] = useState<any>(null);
   const [transactions, setTransactions] = useState<any[]>([]);
 
@@ -117,7 +119,7 @@ const Dashboard = () => {
           </motion.div>
 
           {/* Transaction History */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="p-6 rounded-2xl bg-gradient-card border border-border">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="p-6 rounded-2xl bg-gradient-card border border-border mb-8">
             <h3 className="text-lg font-display font-semibold text-foreground mb-4">{t('dashboard.history')}</h3>
             {transactions.length === 0 ? (
               <p className="text-center text-muted-foreground py-8">{t('dashboard.no_transactions')}</p>
@@ -159,6 +161,60 @@ const Dashboard = () => {
                 </table>
               </div>
             )}
+          </motion.div>
+
+          {/* Referral Section */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="p-6 rounded-2xl bg-gradient-card border border-border relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none" />
+            <div className="relative">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
+                  <Users className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-display font-semibold text-foreground">{t('dashboard.referral_title')}</h3>
+                  <p className="text-sm text-muted-foreground">{t('dashboard.referral_desc')}</p>
+                </div>
+              </div>
+
+              <div className="grid sm:grid-cols-3 gap-4 mb-6">
+                <div className="p-4 rounded-xl bg-secondary/50 text-center">
+                  <div className="text-2xl font-display font-bold text-primary">7%</div>
+                  <div className="text-xs text-muted-foreground">{t('referrals.level1')}</div>
+                </div>
+                <div className="p-4 rounded-xl bg-secondary/50 text-center">
+                  <div className="text-2xl font-display font-bold text-accent">3%</div>
+                  <div className="text-xs text-muted-foreground">{t('referrals.level2')}</div>
+                </div>
+                <div className="p-4 rounded-xl bg-secondary/50 text-center">
+                  <div className="text-2xl font-display font-bold text-muted-foreground">1%</div>
+                  <div className="text-xs text-muted-foreground">{t('referrals.level3')}</div>
+                </div>
+              </div>
+
+              {profile?.referral_code && (
+                <div className="space-y-3">
+                  <label className="text-sm font-medium text-muted-foreground">{t('dashboard.your_link')}</label>
+                  <div className="flex gap-2">
+                    <input
+                      readOnly
+                      value={`${window.location.origin}/register?ref=${profile.referral_code}`}
+                      className="flex-1 px-4 py-3 rounded-xl bg-secondary border border-border text-foreground text-sm font-mono"
+                    />
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(`${window.location.origin}/register?ref=${profile.referral_code}`);
+                        toast({ title: t('deposit.copied') });
+                      }}
+                      className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-all glow-primary"
+                    >
+                      {t('dashboard.copy')}
+                    </button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">{t('dashboard.referral_hint')}</p>
+                </div>
+              )}
+            </div>
           </motion.div>
         </div>
       </section>
